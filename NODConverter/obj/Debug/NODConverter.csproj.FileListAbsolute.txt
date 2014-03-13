@@ -1,0 +1,9 @@
+d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter\bin\Debug\NODConverter.dll
+d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter\bin\Debug\NODConverter.pdb
+d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter\bin\Debug\cli_cppuhelper.dll
+d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter\bin\Debug\Dotnet.Commons.IO.dll
+d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter\bin\Debug\net.sf.dotnetcli.dll
+d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter\bin\Debug\SLF.dll
+d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter\obj\Debug\NODConverter.dll
+d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter\obj\Debug\NODConverter.pdb
+D:\CodeYu\Documents\Visual Studio 2010\Projects\NODConverter\NODConverter\obj\Debug\NODConverter.csprojResolveAssemblyReference.cache
