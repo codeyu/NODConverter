@@ -7,3 +7,12 @@ d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter\bin\De
 d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter\obj\Debug\NODConverter.dll
 d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter\obj\Debug\NODConverter.pdb
 D:\CodeYu\Documents\Visual Studio 2010\Projects\NODConverter\NODConverter\obj\Debug\NODConverter.csprojResolveAssemblyReference.cache
+E:\GitHub\NODConverter\NODConverter\bin\Debug\NODConverter.dll
+E:\GitHub\NODConverter\NODConverter\bin\Debug\NODConverter.pdb
+E:\GitHub\NODConverter\NODConverter\bin\Debug\cli_cppuhelper.dll
+E:\GitHub\NODConverter\NODConverter\bin\Debug\Dotnet.Commons.IO.dll
+E:\GitHub\NODConverter\NODConverter\bin\Debug\net.sf.dotnetcli.dll
+E:\GitHub\NODConverter\NODConverter\bin\Debug\SLF.dll
+E:\GitHub\NODConverter\NODConverter\obj\Debug\NODConverter.csprojResolveAssemblyReference.cache
+E:\GitHub\NODConverter\NODConverter\obj\Debug\NODConverter.dll
+E:\GitHub\NODConverter\NODConverter\obj\Debug\NODConverter.pdb

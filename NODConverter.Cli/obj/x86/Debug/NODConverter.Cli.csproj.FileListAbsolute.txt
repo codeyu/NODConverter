@@ -8,3 +8,13 @@ d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter.Cli\bi
 d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter.Cli\obj\x86\Debug\NODConverter.Cli.exe
 d:\codeyu\documents\visual studio 2010\Projects\NODConverter\NODConverter.Cli\obj\x86\Debug\NODConverter.Cli.pdb
 D:\CodeYu\Documents\Visual Studio 2010\Projects\NODConverter\NODConverter.Cli\obj\x86\Debug\NODConverter.Cli.csprojResolveAssemblyReference.cache
+E:\GitHub\NODConverter\NODConverter.Cli\bin\Debug\NODConverter.Cli.exe
+E:\GitHub\NODConverter\NODConverter.Cli\bin\Debug\NODConverter.Cli.pdb
+E:\GitHub\NODConverter\NODConverter.Cli\bin\Debug\net.sf.dotnetcli.dll
+E:\GitHub\NODConverter\NODConverter.Cli\bin\Debug\NODConverter.dll
+E:\GitHub\NODConverter\NODConverter.Cli\bin\Debug\SLF.dll
+E:\GitHub\NODConverter\NODConverter.Cli\bin\Debug\Dotnet.Commons.IO.dll
+E:\GitHub\NODConverter\NODConverter.Cli\bin\Debug\NODConverter.pdb
+E:\GitHub\NODConverter\NODConverter.Cli\obj\x86\Debug\NODConverter.Cli.csprojResolveAssemblyReference.cache
+E:\GitHub\NODConverter\NODConverter.Cli\obj\x86\Debug\NODConverter.Cli.exe
+E:\GitHub\NODConverter\NODConverter.Cli\obj\x86\Debug\NODConverter.Cli.pdb

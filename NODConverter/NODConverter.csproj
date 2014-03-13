@@ -79,6 +79,7 @@
     <Compile Include="OpenOffice\Connection\PipeOpenOfficeConnection.cs" />
     <Compile Include="OpenOffice\Connection\SocketOpenOfficeConnection.cs" />
     <Compile Include="OpenOffice\Converter\AbstractOpenOfficeDocumentConverter.cs" />
+    <Compile Include="OpenOffice\Converter\OOStreamHelper.cs" />
     <Compile Include="OpenOffice\Converter\OpenOfficeDocumentConverter.cs" />
     <Compile Include="OpenOffice\Converter\StreamOpenOfficeDocumentConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

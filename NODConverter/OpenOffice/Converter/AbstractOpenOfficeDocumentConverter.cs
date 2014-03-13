@@ -45,7 +45,7 @@ namespace NODConverter.OpenOffice.Converter
             this.openOfficeConnection = openOfficeConnection;
             this.documentFormatRegistry = documentFormatRegistry;
 
-            //UPGRADE_TODO: Class“java.util.HashMap”被转换为具有不同行为的 'System.Collections.Hashtable'。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javautilHashMap'"
+            
             defaultLoadProperties = new System.Collections.Hashtable();
             defaultLoadProperties["Hidden"] = true;
             defaultLoadProperties["ReadOnly"] = true;
@@ -155,11 +155,10 @@ namespace NODConverter.OpenOffice.Converter
         {
             PropertyValue[] propertyValues = new PropertyValue[properties.Count];
             int i = 0;
-            //UPGRADE_TODO: 方法“java.util.Map.entrySet”被转换为具有不同行为的 'SupportClass.HashSetSupport'。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javautilMapentrySet'"
-            //UPGRADE_TODO: 方法“java.util.Iterator.hasNext”被转换为具有不同行为的 'System.Collections.IEnumerator.MoveNext'。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javautilIteratorhasNext'"
+            
             for (System.Collections.IEnumerator iter = new SupportClass.HashSetSupport(properties).GetEnumerator(); iter.MoveNext(); )
             {
-                //UPGRADE_TODO: 方法“java.util.Iterator.next”被转换为具有不同行为的 'System.Collections.IEnumerator.Current'。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javautilIteratornext'"
+               
                 System.Collections.DictionaryEntry entry = (System.Collections.DictionaryEntry)iter.Current;
                 System.Object value_Renamed = entry.Value;
                 if (value_Renamed is System.Collections.IDictionary)

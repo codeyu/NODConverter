@@ -168,7 +168,14 @@ namespace NODConverter.OpenOffice.Converter
                 throw new OpenOfficeException("conversion failed: could not load input document");
             }
 
-            refreshDocument(document);
+            try
+            {
+                refreshDocument(document);//使用此函数后Excel2pdf 提示异常：无法将透明代理强制转换为类型XRefreshable
+            }
+            catch
+            {
+
+            }
 
             try
             {

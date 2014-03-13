@@ -4,7 +4,8 @@ using System.Text;
 
 namespace NODConverter
 {
-    class XmlDocumentFormatRegistry
+    public class XmlDocumentFormatRegistry
     {
+        //to do
     }
 }
