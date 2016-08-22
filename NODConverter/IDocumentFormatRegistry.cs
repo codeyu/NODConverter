@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NODConverter
+﻿namespace NODConverter
 {
     public interface IDocumentFormatRegistry
     {
 
-        DocumentFormat getFormatByFileExtension(string extension);
+        DocumentFormat GetFormatByFileExtension(string extension);
 
-        DocumentFormat getFormatByMimeType(string extension);
+        DocumentFormat GetFormatByMimeType(string extension);
 
     }
 }

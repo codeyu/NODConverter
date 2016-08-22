@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections;
+﻿using System.Collections;
+
 namespace NODConverter
 {
     /// <summary>
@@ -11,14 +9,14 @@ namespace NODConverter
     public class DocumentFormat
     {
 
-        private const string FILTER_NAME = "FilterName";
+        private const string FilterName = "FilterName";
 
-        private string name;
-        private DocumentFamily family;
-        private string mimeType;
-        private string fileExtension;
-        private IDictionary exportOptions = new Hashtable(); //<DocumentFamily,Map<String,Object>>
-        private IDictionary importOptions = new Hashtable(); //<String,Object>
+        private readonly string _name;
+        private readonly DocumentFamily _family;
+        private readonly string _mimeType;
+        private readonly string _fileExtension;
+        private readonly IDictionary _exportOptions = new Hashtable(); //<DocumentFamily,Map<String,Object>>
+        private readonly IDictionary _importOptions = new Hashtable(); //<String,Object>
 
         public DocumentFormat()
         {
@@ -27,24 +25,24 @@ namespace NODConverter
 
         public DocumentFormat(string name, string mimeType, string extension)
         {
-            this.name = name;
-            this.mimeType = mimeType;
-            this.fileExtension = extension;
+            _name = name;
+            _mimeType = mimeType;
+            _fileExtension = extension;
         }
 
         public DocumentFormat(string name, DocumentFamily family, string mimeType, string extension)
         {
-            this.name = name;
-            this.family = family;
-            this.mimeType = mimeType;
-            this.fileExtension = extension;
+            _name = name;
+            _family = family;
+            _mimeType = mimeType;
+            _fileExtension = extension;
         }
 
         public virtual string Name
         {
             get
             {
-                return name;
+                return _name;
             }
         }
 
@@ -52,7 +50,7 @@ namespace NODConverter
         {
             get
             {
-                return family;
+                return _family;
             }
         }
 
@@ -60,7 +58,7 @@ namespace NODConverter
         {
             get
             {
-                return mimeType;
+                return _mimeType;
             }
         }
 
@@ -68,20 +66,20 @@ namespace NODConverter
         {
             get
             {
-                return fileExtension;
+                return _fileExtension;
             }
         }
 
-        private string getExportFilter(DocumentFamily family)
+        private string GetExportFilter(DocumentFamily family)
         {
-            return (string)getExportOptions(family)[FILTER_NAME];
+            return (string)GetExportOptions(family)[FilterName];
         }
 
         public virtual bool Importable
         {
             get
             {
-                return family != null;
+                return _family != null;
             }
         }
 
@@ -93,59 +91,59 @@ namespace NODConverter
             }
         }
 
-        public virtual bool isExportableTo(DocumentFormat otherFormat)
+        public virtual bool IsExportableTo(DocumentFormat otherFormat)
         {
-            return otherFormat.isExportableFrom(this.family);
+            return otherFormat.IsExportableFrom(_family);
         }
 
-        public virtual bool isExportableFrom(DocumentFamily family)
+        public virtual bool IsExportableFrom(DocumentFamily family)
         {
-            return getExportFilter(family) != null;
+            return GetExportFilter(family) != null;
         }
 
-        public virtual void setExportFilter(DocumentFamily family, string filter)
+        public virtual void SetExportFilter(DocumentFamily family, string filter)
         {
-            getExportOptions(family)[FILTER_NAME] = filter;
+            GetExportOptions(family)[FilterName] = filter;
         }
 
-        public virtual void setExportOption(DocumentFamily family, string name, object value)
+        public virtual void SetExportOption(DocumentFamily family, string name, object value)
         {
-            IDictionary options = (IDictionary)exportOptions[family]; //<String,Object>
+            IDictionary options = (IDictionary)_exportOptions[family]; //<String,Object>
             if (options == null)
             {
                 options = new Hashtable();
-                exportOptions[family] = options;
+                _exportOptions[family] = options;
             }
             options[name] = value;
         }
 
-        public virtual IDictionary getExportOptions(DocumentFamily family) //<String,Object>
+        public virtual IDictionary GetExportOptions(DocumentFamily family) //<String,Object>
         {
-            IDictionary options = (IDictionary)exportOptions[family]; //<String,Object>
+            IDictionary options = (IDictionary)_exportOptions[family]; //<String,Object>
             if (options == null)
             {
                 options = new Hashtable();
-                exportOptions[family] = options;
+                _exportOptions[family] = options;
             }
             return options;
         }
 
-        public virtual void setImportOption(string name, object value)
+        public virtual void SetImportOption(string name, object value)
         {
-            importOptions[name] = value;
+            _importOptions[name] = value;
         }
 
         public virtual IDictionary ImportOptions
         {
             get
             {
-                if (importOptions != null)
+                if (_importOptions != null)
                 {
-                    return importOptions;
+                    return _importOptions;
                 }
                 else
                 {
-                    return (System.Collections.IDictionary)new System.Collections.Hashtable();
+                    return new Hashtable();
                 }
             }
         }

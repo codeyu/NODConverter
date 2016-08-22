@@ -10,8 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NODConverter</RootNamespace>
     <AssemblyName>NODConverter</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,29 +33,25 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="cli_basetypes, Version=1.0.20.0, Culture=neutral, PublicKeyToken=ce2cb7e279207b9e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="cli_basetypes">
       <HintPath>..\ThirdLib\cli_basetypes.dll</HintPath>
     </Reference>
-    <Reference Include="cli_cppuhelper, Version=1.0.23.0, Culture=neutral, PublicKeyToken=ce2cb7e279207b9e, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="cli_cppuhelper">
       <HintPath>..\ThirdLib\cli_cppuhelper.dll</HintPath>
     </Reference>
-    <Reference Include="cli_oootypes, Version=1.0.9.0, Culture=neutral, PublicKeyToken=ce2cb7e279207b9e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="cli_oootypes">
       <HintPath>..\ThirdLib\cli_oootypes.dll</HintPath>
     </Reference>
-    <Reference Include="cli_ure, Version=1.0.23.0, Culture=neutral, PublicKeyToken=ce2cb7e279207b9e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="cli_ure">
       <HintPath>..\ThirdLib\cli_ure.dll</HintPath>
     </Reference>
-    <Reference Include="cli_uretypes, Version=1.0.9.0, Culture=neutral, PublicKeyToken=ce2cb7e279207b9e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="cli_uretypes">
       <HintPath>..\ThirdLib\cli_uretypes.dll</HintPath>
     </Reference>
     <Reference Include="Dotnet.Commons.IO">
       <HintPath>..\ThirdLib\Dotnet.Commons.IO.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="net.sf.dotnetcli">
       <HintPath>..\ThirdLib\net.sf.dotnetcli.dll</HintPath>
     </Reference>
@@ -84,6 +82,7 @@
     <Compile Include="OpenOffice\Converter\StreamOpenOfficeDocumentConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SupportClass.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="XmlDocumentFormatRegistry.cs" />
   </ItemGroup>
   <ItemGroup />

@@ -1,29 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections;
+using System.IO;
 using NODConverter.OpenOffice.Connection;
+using uno;
+using unoidl.com.sun.star.frame;
+using unoidl.com.sun.star.io;
+using unoidl.com.sun.star.lang;
+
 namespace NODConverter.OpenOffice.Converter
 {
-    using XComponentLoader = unoidl.com.sun.star.frame.XComponentLoader;
-    using XStorable = unoidl.com.sun.star.frame.XStorable;
-    using XComponent = unoidl.com.sun.star.lang.XComponent;
-    
-    
     /// <summary>
     /// Alternative stream-based <seealso cref="DocumentConverter"/> implementation.
-    /// <p>
+    /// <p/>
     /// This implementation passes document data to and from the OpenOffice.org
     /// service as streams.
-    /// <p>
+    /// <p/>
     /// Stream-based conversions are slower than the default file-based ones (provided
     /// by <seealso cref="OpenOfficeDocumentConverter"/>) but they allow to run the OpenOffice.org
     /// service on a different machine, or under a different system user on the same
     /// machine without file permission problems.
-    /// <p>
+    /// <p/>
     /// <b>Warning!</b> There is a <a href="http://www.openoffice.org/issues/show_bug.cgi?id=75519">bug</a>
     /// in OpenOffice.org 2.2.x that causes some input formats, including Word and Excel, not to work when
     /// using stream-base conversions.
-    /// <p>
+    /// <p/>
     /// Use this implementation only if <seealso cref="OpenOfficeDocumentConverter"/> is not possible.
     /// </summary>
     /// <seealso cref= OpenOfficeDocumentConverter </seealso>
@@ -41,81 +41,81 @@ namespace NODConverter.OpenOffice.Converter
         {
         }
 
-        protected internal override void convertInternal(System.IO.FileInfo inputFile, DocumentFormat inputFormat, System.IO.FileInfo outputFile, DocumentFormat outputFormat)
+        protected internal override void ConvertInternal(FileInfo inputFile, DocumentFormat inputFormat, FileInfo outputFile, DocumentFormat outputFormat)
         {
-            System.IO.Stream inputStream = null;
-            System.IO.Stream outputStream = null;
+            Stream inputStream = null;
+            Stream outputStream = null;
             try
             {
                 
-                inputStream = new System.IO.FileStream(inputFile.FullName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                inputStream = new FileStream(inputFile.FullName, FileMode.Open, FileAccess.Read);
                 
-                outputStream = new System.IO.FileStream(outputFile.FullName, System.IO.FileMode.Create);
-                convert(inputStream, inputFormat, outputStream, outputFormat);
+                outputStream = new FileStream(outputFile.FullName, FileMode.Create);
+                Convert(inputStream, inputFormat, outputStream, outputFormat);
             }
-            catch (System.IO.FileNotFoundException fileNotFoundException)
+            catch (FileNotFoundException fileNotFoundException)
             {
                
-                throw new System.ArgumentException(fileNotFoundException.Message);
+                throw new ArgumentException(fileNotFoundException.Message);
             }
             finally
             {
-                inputStream.Close();
-                outputStream.Close();
+                if (inputStream != null) inputStream.Close();
+                if (outputStream != null) outputStream.Close();
             }
         }
 
-        protected internal override void convertInternal(System.IO.Stream inputStream, DocumentFormat inputFormat, System.IO.Stream outputStream, DocumentFormat outputFormat)
+        protected internal override void ConvertInternal(Stream inputStream, DocumentFormat inputFormat, Stream outputStream, DocumentFormat outputFormat)
         {
-            System.Collections.IDictionary exportOptions = outputFormat.getExportOptions(inputFormat.Family);
+            IDictionary exportOptions = outputFormat.GetExportOptions(inputFormat.Family);
 
             try
             {
-                lock (openOfficeConnection)
+                lock (OpenOfficeConnection)
                 {
-                    loadAndExport(inputStream, inputFormat.ImportOptions, outputStream, exportOptions);
+                    LoadAndExport(inputStream, inputFormat.ImportOptions, outputStream, exportOptions);
                 }
             }
-            catch (OpenOfficeException openOfficeException)
+            catch (OpenOfficeException)
             {
-                throw openOfficeException;
+                throw;
             }
            
-            catch (System.Exception throwable)
+            catch (Exception throwable)
             {
                 throw new OpenOfficeException("conversion failed", throwable);
             }
         }
 
-        private void loadAndExport(System.IO.Stream inputStream, System.Collections.IDictionary importOptions, System.IO.Stream outputStream, System.Collections.IDictionary exportOptions)
+        private void LoadAndExport(Stream inputStream, IDictionary importOptions, Stream outputStream, IDictionary exportOptions)
         {
-            XComponentLoader desktop = openOfficeConnection.Desktop;
+            XComponentLoader desktop = OpenOfficeConnection.Desktop;
 
             
-            System.Collections.IDictionary loadProperties = new System.Collections.Hashtable();
+            IDictionary loadProperties = new Hashtable();
             SupportClass.MapSupport.PutAll(loadProperties, DefaultLoadProperties);
             SupportClass.MapSupport.PutAll(loadProperties, importOptions);
             // doesn't work using InputStreamToXInputStreamAdapter; probably because it's not XSeekable 
             //property("InputStream", new InputStreamToXInputStreamAdapter(inputStream))
-            loadProperties["InputStream"] = new uno.Any(typeof(unoidl.com.sun.star.io.XInputStream), new XInputStreamWrapper(inputStream)); 
+            loadProperties["InputStream"] = new Any(typeof(XInputStream), new XInputStreamWrapper(inputStream)); 
             
-            XComponent document = desktop.loadComponentFromURL("private:stream", "_blank", 0, toPropertyValues(loadProperties));
+            XComponent document = desktop.loadComponentFromURL("private:stream", "_blank", 0, ToPropertyValues(loadProperties));
             if (document == null)
             {
                 throw new OpenOfficeException("conversion failed: input document is null after loading");
             }
 
-            refreshDocument(document);
+            RefreshDocument(document);
 
             
-            System.Collections.IDictionary storeProperties = new System.Collections.Hashtable();
+            IDictionary storeProperties = new Hashtable();
             SupportClass.MapSupport.PutAll(storeProperties, exportOptions);
-            storeProperties["OutputStream"] = new uno.Any(typeof(unoidl.com.sun.star.io.XOutputStream), new XOutputStreamWrapper(outputStream)); 
+            storeProperties["OutputStream"] = new Any(typeof(XOutputStream), new XOutputStreamWrapper(outputStream)); 
 
             try
             {
                 XStorable storable = (XStorable)document;
-                storable.storeToURL("private:stream", toPropertyValues(storeProperties));
+                storable.storeToURL("private:stream", ToPropertyValues(storeProperties));
             }
             finally
             {

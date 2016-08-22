@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.IO;
 
 namespace NODConverter
 {
@@ -8,7 +6,7 @@ namespace NODConverter
     {
 
         /// <summary> Convert a document.
-        /// <p>
+        /// <p/>
         /// Note that this method does not close <tt>inputStream</tt> and <tt>outputStream</tt>.
         /// 
         /// </summary>
@@ -20,7 +18,7 @@ namespace NODConverter
         /// </param>
         /// <param name="outputFormat">
         /// </param>
-        void convert(System.IO.Stream inputStream, DocumentFormat inputFormat, System.IO.Stream outputStream, DocumentFormat outputFormat);
+        void Convert(Stream inputStream, DocumentFormat inputFormat, Stream outputStream, DocumentFormat outputFormat);
 
         /// <summary> Convert a document.
         /// 
@@ -33,7 +31,7 @@ namespace NODConverter
         /// </param>
         /// <param name="outputFormat">
         /// </param>
-        void convert(System.IO.FileInfo inputFile, DocumentFormat inputFormat, System.IO.FileInfo outputFile, DocumentFormat outputFormat);
+        void Convert(FileInfo inputFile, DocumentFormat inputFormat, FileInfo outputFile, DocumentFormat outputFormat);
 
 
         /// <summary> Convert a document. The input format is guessed from the file extension.
@@ -45,7 +43,7 @@ namespace NODConverter
         /// </param>
         /// <param name="outputFormat">
         /// </param>
-        void convert(System.IO.FileInfo inputDocument, System.IO.FileInfo outputDocument, DocumentFormat outputFormat);
+        void Convert(FileInfo inputDocument, FileInfo outputDocument, DocumentFormat outputFormat);
 
         /// <summary> Convert a document. Both input and output formats are guessed from the file extension.
         /// 
@@ -54,7 +52,7 @@ namespace NODConverter
         /// </param>
         /// <param name="outputDocument">
         /// </param>
-        void convert(System.IO.FileInfo inputDocument, System.IO.FileInfo outputDocument);
+        void Convert(FileInfo inputDocument, FileInfo outputDocument);
 
     }
 }

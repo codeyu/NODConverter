@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿using unoidl.com.sun.star.bridge;
+using unoidl.com.sun.star.frame;
+using unoidl.com.sun.star.lang;
+using unoidl.com.sun.star.ucb;
+using unoidl.com.sun.star.uno;
 namespace NODConverter.OpenOffice.Connection
 {
-    using XBridge = unoidl.com.sun.star.bridge.XBridge;
-    using XComponentLoader = unoidl.com.sun.star.frame.XComponentLoader;
-    using XMultiComponentFactory = unoidl.com.sun.star.lang.XMultiComponentFactory;
-    using XFileIdentifierConverter = unoidl.com.sun.star.ucb.XFileIdentifierConverter;
-    using XComponentContext = unoidl.com.sun.star.uno.XComponentContext;
-
     public interface IOpenOfficeConnection
     {
-        void connect();
+        void Connect();
 
-        void disconnect();
+        void Disconnect();
 
         bool Connected { get; }
 

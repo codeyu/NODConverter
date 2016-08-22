@@ -1,39 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.IO;
+using unoidl.com.sun.star.io;
 
 namespace NODConverter.OpenOffice.Converter
 {
-    public class XOutputStreamWrapper : unoidl.com.sun.star.io.XOutputStream
+    public class XOutputStreamWrapper : XOutputStream
     {
-        private System.IO.Stream ostream;
+        private readonly Stream _ostream;
 
-        public XOutputStreamWrapper(System.IO.Stream ostream)
+        public XOutputStreamWrapper(Stream ostream)
         {
-            this.ostream = ostream;
+            _ostream = ostream;
         }
 
         public void closeOutput()
         {
-            ostream.Close();
+            _ostream.Close();
         }
 
         public void flush()
         {
-            ostream.Flush();
+            _ostream.Flush();
         }
 
         public void writeBytes(byte[] b)
         {
-            ostream.Write(b, 0, b.Length);
+            _ostream.Write(b, 0, b.Length);
         }
     }
 
-    public class XInputStreamWrapper : unoidl.com.sun.star.io.XInputStream, unoidl.com.sun.star.io.XSeekable
+    public class XInputStreamWrapper : XInputStream, XSeekable
     {
-        private System.IO.Stream instream;
+        private Stream instream;
 
-        public XInputStreamWrapper(System.IO.Stream instream)
+        public XInputStreamWrapper(Stream instream)
         {
             this.instream = instream;
         }
@@ -57,7 +56,7 @@ namespace NODConverter.OpenOffice.Converter
 
         public void skipBytes(int nToSkip)
         {
-            instream.Seek(nToSkip, System.IO.SeekOrigin.Current);
+            instream.Seek(nToSkip, SeekOrigin.Current);
         }
 
         public int available()
@@ -83,7 +82,7 @@ namespace NODConverter.OpenOffice.Converter
 
         public void seek(long pos)
         {
-            instream.Seek(pos, System.IO.SeekOrigin.Begin);
+            instream.Seek(pos, SeekOrigin.Begin);
         }
     } 
 }

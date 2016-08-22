@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NODConverter.OpenOffice.Connection
+﻿namespace NODConverter.OpenOffice.Connection
 {
     public class SocketOpenOfficeConnection : AbstractOpenOfficeConnection
     {
 
-        public const string DEFAULT_HOST = "127.0.0.1";
-        public const int DEFAULT_PORT = 8100;
+        public const string DefaultHost = "127.0.0.1";
+        public const int DefaultPort = 8100;
 
         public SocketOpenOfficeConnection()
-            : this(DEFAULT_HOST, DEFAULT_PORT)
+            : this(DefaultHost, DefaultPort)
         {
         }
 
         public SocketOpenOfficeConnection(int port)
-            : this(DEFAULT_HOST, port)
+            : this(DefaultHost, port)
         {
         }
 

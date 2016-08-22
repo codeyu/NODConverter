@@ -1,62 +1,54 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.CompilerServices;
-using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
+using Slf;
+using uno.util;
+using unoidl.com.sun.star.beans;
+using unoidl.com.sun.star.bridge;
+using unoidl.com.sun.star.connection;
+using unoidl.com.sun.star.frame;
+using unoidl.com.sun.star.lang;
+using unoidl.com.sun.star.ucb;
+using unoidl.com.sun.star.uno;
+using Exception = System.Exception;
 namespace NODConverter.OpenOffice.Connection
 {
-    using Logger = Slf.ILogger;
+    using Logger = ILogger;
 
-    using XPropertySet = unoidl.com.sun.star.beans.XPropertySet;
-    using XBridge = unoidl.com.sun.star.bridge.XBridge;
-    using XBridgeFactory = unoidl.com.sun.star.bridge.XBridgeFactory;
-    using Bootstrap = uno.util.Bootstrap;
-    using NoConnectException = unoidl.com.sun.star.connection.NoConnectException;
-    using XConnection = unoidl.com.sun.star.connection.XConnection;
-    using XConnector = unoidl.com.sun.star.connection.XConnector;
-    using XComponentLoader = unoidl.com.sun.star.frame.XComponentLoader;
-    using EventObject = unoidl.com.sun.star.lang.EventObject;
-    using XComponent = unoidl.com.sun.star.lang.XComponent;
-    using XEventListener = unoidl.com.sun.star.lang.XEventListener;
-    using XMultiComponentFactory = unoidl.com.sun.star.lang.XMultiComponentFactory;
-    using XFileIdentifierConverter = unoidl.com.sun.star.ucb.XFileIdentifierConverter;
-    using XComponentContext = unoidl.com.sun.star.uno.XComponentContext;
-    using XUnoUrlResolver = unoidl.com.sun.star.bridge.XUnoUrlResolver;
-    using XMultiServiceFactory = unoidl.com.sun.star.lang.XMultiServiceFactory;
-    
-    public abstract class AbstractOpenOfficeConnection : IOpenOfficeConnection, unoidl.com.sun.star.lang.XEventListener
+    public abstract class AbstractOpenOfficeConnection : IOpenOfficeConnection, XEventListener
     {
 
-        protected internal readonly Logger logger = LoggerFactory.GetLogger();
+        protected internal readonly Logger Logger = LoggerFactory.GetLogger();
 
-        private string connectionString;
-        private XComponent bridgeComponent;
-        private XMultiComponentFactory serviceManager;
-        private XComponentContext componentContext;
-        private XBridge bridge;
-        private bool connected = false;
-        private bool expectingDisconnection = false;
+        private readonly string _connectionString;
+        private XComponent _bridgeComponent;
+        private XMultiComponentFactory _serviceManager;
+        private XComponentContext _componentContext;
+        private XBridge _bridge;
+        private bool _connected;
+        private bool _expectingDisconnection;
         protected internal AbstractOpenOfficeConnection(string connectionString)
         {
-            this.connectionString = connectionString;
+            _connectionString = connectionString;
         }
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public virtual void connect()
+        public virtual void Connect()
         {
-            logger.Debug("connecting");
+            Logger.Debug("connecting");
             try
             {
-                Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
-                XComponentContext localContext = uno.util.Bootstrap.defaultBootstrap_InitialComponentContext();
+                InitUno();
+                var sock = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
+                //XComponentContext localContext = Bootstrap.bootstrap();
+                XComponentContext localContext = Bootstrap.defaultBootstrap_InitialComponentContext();
                 XMultiComponentFactory localServiceManager = localContext.getServiceManager();
                 XConnector connector = (XConnector)localServiceManager.createInstanceWithContext("com.sun.star.connection.Connector", localContext);
-                XConnection connection = connector.connect(connectionString);
+                XConnection connection = connector.connect(_connectionString);
                 XBridgeFactory bridgeFactory = (XBridgeFactory)localServiceManager.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", localContext);
-                bridge = bridgeFactory.createBridge("", "urp", connection, null);
-                bridgeComponent = (XComponent)bridge;
-                bridgeComponent.addEventListener(this);
-                serviceManager = (XMultiComponentFactory)bridge.getInstance("StarOffice.ServiceManager");
+                _bridge = bridgeFactory.createBridge("", "urp", connection, null);
+                _bridgeComponent = (XComponent)_bridge;
+                _bridgeComponent.addEventListener(this);
+                _serviceManager = (XMultiComponentFactory)_bridge.getInstance("StarOffice.ServiceManager");
                 //另一种连接方式------------begin
                 //XUnoUrlResolver xUrlResolver = (XUnoUrlResolver)localServiceManager.createInstanceWithContext("com.sun.star.bridge.UnoUrlResolver", localContext);
 
@@ -65,71 +57,71 @@ namespace NODConverter.OpenOffice.Connection
                 //---------------------------------------end
 
 
-                XPropertySet properties = (XPropertySet)serviceManager;
+                XPropertySet properties = (XPropertySet)_serviceManager;
                 // Get the default context from the office server. 
-                uno.Any oDefaultContext = properties.getPropertyValue("DefaultContext");
+                var oDefaultContext = properties.getPropertyValue("DefaultContext");
 
-                componentContext = (XComponentContext)oDefaultContext.Value;
-                connected = true;
-                logger.Info("connected");
+                _componentContext = (XComponentContext)oDefaultContext.Value;
+                _connected = true;
+                Logger.Info("connected");
             }
             catch (NoConnectException connectException)
             {
-                throw new OpenOfficeException("connection failed: " + connectionString + ": " + connectException.Message);
+                throw new OpenOfficeException("connection failed: " + _connectionString + ": " + connectException.Message);
             }
             catch (Exception exception)
             {
-                throw new OpenOfficeException("connection failed: " + connectionString, exception);
+                throw new OpenOfficeException("connection failed: " + _connectionString, exception);
             }
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public virtual void disconnect()
+        public virtual void Disconnect()
         {
-            logger.Debug("disconnecting");
-            expectingDisconnection = true;
-            bridgeComponent.dispose();
+            Logger.Debug("disconnecting");
+            _expectingDisconnection = true;
+            _bridgeComponent.dispose();
         }
 
         public virtual bool Connected
         {
             get
             {
-                return connected;
+                return _connected;
             }
         }
 
         public virtual void disposing(EventObject @event)
         {
-            connected = false;
-            if (expectingDisconnection)
+            _connected = false;
+            if (_expectingDisconnection)
             {
-                logger.Info("disconnected");
+                Logger.Info("disconnected");
             }
             else
             {
-                logger.Error("disconnected unexpectedly");
+                Logger.Error("disconnected unexpectedly");
             }
-            expectingDisconnection = false;
+            _expectingDisconnection = false;
         }
 
         // for unit tests only
-        internal virtual void simulateUnexpectedDisconnection()
+        internal virtual void SimulateUnexpectedDisconnection()
         {
             disposing(null);
-            bridgeComponent.dispose();
+            _bridgeComponent.dispose();
         }
 
-        private object getService(string className)
+        private object GetService(string className)
         {
             try
             {
-                if (!connected)
+                if (!_connected)
                 {
-                    logger.Info("trying to (re)connect");
-                    connect();
+                    Logger.Info("trying to (re)connect");
+                    Connect();
                 }
-                return serviceManager.createInstanceWithContext(className, componentContext);
+                return _serviceManager.createInstanceWithContext(className, _componentContext);
             }
             catch (Exception exception)
             {
@@ -141,7 +133,7 @@ namespace NODConverter.OpenOffice.Connection
         {
             get
             {
-                return (XComponentLoader)getService("com.sun.star.frame.Desktop");
+                return (XComponentLoader)GetService("com.sun.star.frame.Desktop");
             }
         }
 
@@ -149,7 +141,7 @@ namespace NODConverter.OpenOffice.Connection
         {
             get
             {
-                return (XFileIdentifierConverter)getService("com.sun.star.ucb.FileContentProvider");
+                return (XFileIdentifierConverter)GetService("com.sun.star.ucb.FileContentProvider");
             }
         }
 
@@ -157,7 +149,7 @@ namespace NODConverter.OpenOffice.Connection
         {
             get
             {
-                return bridge;
+                return _bridge;
             }
         }
 
@@ -165,7 +157,7 @@ namespace NODConverter.OpenOffice.Connection
         {
             get
             {
-                return serviceManager;
+                return _serviceManager;
             }
         }
 
@@ -173,8 +165,32 @@ namespace NODConverter.OpenOffice.Connection
         {
             get
             {
-                return componentContext;
+                return _componentContext;
             }
+        }
+
+        private static void InitUno()
+        {
+            String unoPath = "";
+            // access 32bit registry entry for latest LibreOffice for Current User
+            Microsoft.Win32.RegistryKey hkcuView32 = Microsoft.Win32.RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.CurrentUser, Microsoft.Win32.RegistryView.Registry32);
+            Microsoft.Win32.RegistryKey hkcuUnoInstallPathKey = hkcuView32.OpenSubKey(@"SOFTWARE\LibreOffice\UNO\InstallPath", false);
+            if (hkcuUnoInstallPathKey != null && hkcuUnoInstallPathKey.ValueCount > 0)
+            {
+                unoPath = (string)hkcuUnoInstallPathKey.GetValue(hkcuUnoInstallPathKey.GetValueNames()[hkcuUnoInstallPathKey.ValueCount - 1]);
+            }
+            else
+            {
+                // access 32bit registry entry for latest LibreOffice for Local Machine (All Users)
+                Microsoft.Win32.RegistryKey hklmView32 = Microsoft.Win32.RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.LocalMachine, Microsoft.Win32.RegistryView.Registry32);
+                Microsoft.Win32.RegistryKey hklmUnoInstallPathKey = hklmView32.OpenSubKey(@"SOFTWARE\LibreOffice\UNO\InstallPath", false);
+                if (hklmUnoInstallPathKey != null && hklmUnoInstallPathKey.ValueCount > 0)
+                {
+                    unoPath = (string)hklmUnoInstallPathKey.GetValue(hklmUnoInstallPathKey.GetValueNames()[hklmUnoInstallPathKey.ValueCount - 1]);
+                }
+            }
+            Environment.SetEnvironmentVariable("UNO_PATH", unoPath, EnvironmentVariableTarget.Process); 
+            Environment.SetEnvironmentVariable("PATH", Environment.GetEnvironmentVariable("PATH") + @";" + unoPath, EnvironmentVariableTarget.Process);
         }
     }
 }

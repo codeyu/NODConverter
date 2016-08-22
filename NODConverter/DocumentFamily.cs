@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections;
+
 namespace NODConverter
 {
     /// <summary>
@@ -10,41 +9,41 @@ namespace NODConverter
     public class DocumentFamily
     {
 
-        public static readonly DocumentFamily TEXT = new DocumentFamily("Text");
-        public static readonly DocumentFamily SPREADSHEET = new DocumentFamily("Spreadsheet");
-        public static readonly DocumentFamily PRESENTATION = new DocumentFamily("Presentation");
-        public static readonly DocumentFamily DRAWING = new DocumentFamily("Drawing");
+        public static readonly DocumentFamily Text = new DocumentFamily("Text");
+        public static readonly DocumentFamily Spreadsheet = new DocumentFamily("Spreadsheet");
+        public static readonly DocumentFamily Presentation = new DocumentFamily("Presentation");
+        public static readonly DocumentFamily Drawing = new DocumentFamily("Drawing");
 
-        private static IDictionary FAMILIES = new Hashtable();
+        private static readonly IDictionary Families = new Hashtable();
         static DocumentFamily()
         {
-            FAMILIES[TEXT.name] = TEXT;
-            FAMILIES[SPREADSHEET.name] = SPREADSHEET;
-            FAMILIES[PRESENTATION.name] = PRESENTATION;
-            FAMILIES[DRAWING.name] = DRAWING;
+            Families[Text._name] = Text;
+            Families[Spreadsheet._name] = Spreadsheet;
+            Families[Presentation._name] = Presentation;
+            Families[Drawing._name] = Drawing;
         }
 
-        private string name;
+        private readonly string _name;
 
         private DocumentFamily(string name)
         {
-            this.name = name;
+            _name = name;
         }
 
         public virtual string Name
         {
             get
             {
-                return name;
+                return _name;
             }
         }
 
-        public static DocumentFamily getFamily(string name)
+        public static DocumentFamily GetFamily(string name)
         {
-            DocumentFamily family = (DocumentFamily)FAMILIES[name];
+            DocumentFamily family = (DocumentFamily)Families[name];
             if (family == null)
             {
-                throw new System.ArgumentException("invalid DocumentFamily: " + name);
+                throw new ArgumentException("invalid DocumentFamily: " + name);
             }
             return family;
         }

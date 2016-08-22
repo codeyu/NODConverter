@@ -1,22 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections;
-using net.sf.dotnetcli;
+using System.IO;
 using NODConverter.OpenOffice.Connection;
+using uno;
+using unoidl.com.sun.star.beans;
+using unoidl.com.sun.star.lang;
+using unoidl.com.sun.star.util;
+
 namespace NODConverter.OpenOffice.Converter
 {
-    using PropertyValue = unoidl.com.sun.star.beans.PropertyValue;
-    using XComponent = unoidl.com.sun.star.lang.XComponent;
-    using XRefreshable = unoidl.com.sun.star.util.XRefreshable;
-
     public abstract class AbstractOpenOfficeDocumentConverter : IDocumentConverter
     {
-        virtual protected internal System.Collections.IDictionary DefaultLoadProperties
+        virtual protected internal IDictionary DefaultLoadProperties
         {
             get
             {
-                return defaultLoadProperties;
+                return _defaultLoadProperties;
             }
 
         }
@@ -24,116 +23,112 @@ namespace NODConverter.OpenOffice.Converter
         {
             get
             {
-                return documentFormatRegistry;
+                return _documentFormatRegistry;
             }
 
         }
 
         
-        private System.Collections.IDictionary defaultLoadProperties;
+        private readonly IDictionary _defaultLoadProperties;
 
-        protected internal IOpenOfficeConnection openOfficeConnection;
-        private IDocumentFormatRegistry documentFormatRegistry;
+        protected internal IOpenOfficeConnection OpenOfficeConnection;
+        private readonly IDocumentFormatRegistry _documentFormatRegistry;
 
-        public AbstractOpenOfficeDocumentConverter(IOpenOfficeConnection connection)
+        protected AbstractOpenOfficeDocumentConverter(IOpenOfficeConnection connection)
             : this(connection, new DefaultDocumentFormatRegistry())
         {
         }
 
-        public AbstractOpenOfficeDocumentConverter(IOpenOfficeConnection openOfficeConnection, IDocumentFormatRegistry documentFormatRegistry)
+        protected AbstractOpenOfficeDocumentConverter(IOpenOfficeConnection openOfficeConnection, IDocumentFormatRegistry documentFormatRegistry)
         {
-            this.openOfficeConnection = openOfficeConnection;
-            this.documentFormatRegistry = documentFormatRegistry;
+            OpenOfficeConnection = openOfficeConnection;
+            _documentFormatRegistry = documentFormatRegistry;
 
             
-            defaultLoadProperties = new System.Collections.Hashtable();
-            defaultLoadProperties["Hidden"] = true;
-            defaultLoadProperties["ReadOnly"] = true;
+            _defaultLoadProperties = new Hashtable();
+            _defaultLoadProperties["Hidden"] = true;
+            _defaultLoadProperties["ReadOnly"] = true;
         }
 
-        public virtual void setDefaultLoadProperty(System.String name, System.Object value_Renamed)
+        public virtual void SetDefaultLoadProperty(String name, Object valueRenamed)
         {
-            defaultLoadProperties[name] = value_Renamed;
+            _defaultLoadProperties[name] = valueRenamed;
         }
 
-        public virtual void convert(System.IO.FileInfo inputFile, System.IO.FileInfo outputFile)
+        public virtual void Convert(FileInfo inputFile, FileInfo outputFile)
         {
-            convert(inputFile, outputFile, null);
+            Convert(inputFile, outputFile, null);
         }
 
-        public virtual void convert(System.IO.FileInfo inputFile, System.IO.FileInfo outputFile, DocumentFormat outputFormat)
+        public virtual void Convert(FileInfo inputFile, FileInfo outputFile, DocumentFormat outputFormat)
         {
-            convert(inputFile, null, outputFile, outputFormat);
+            Convert(inputFile, null, outputFile, outputFormat);
         }
 
-        public virtual void convert(System.IO.Stream inputStream, DocumentFormat inputFormat, System.IO.Stream outputStream, DocumentFormat outputFormat)
+        public virtual void Convert(Stream inputStream, DocumentFormat inputFormat, Stream outputStream, DocumentFormat outputFormat)
         {
-            ensureNotNull("inputStream", inputStream);
-            ensureNotNull("inputFormat", inputFormat);
-            ensureNotNull("outputStream", outputStream);
-            ensureNotNull("outputFormat", outputFormat);
-            convertInternal(inputStream, inputFormat, outputStream, outputFormat);
+            EnsureNotNull("inputStream", inputStream);
+            EnsureNotNull("inputFormat", inputFormat);
+            EnsureNotNull("outputStream", outputStream);
+            EnsureNotNull("outputFormat", outputFormat);
+            ConvertInternal(inputStream, inputFormat, outputStream, outputFormat);
         }
 
-        public virtual void convert(System.IO.FileInfo inputFile, DocumentFormat inputFormat, System.IO.FileInfo outputFile, DocumentFormat outputFormat)
+        public virtual void Convert(FileInfo inputFile, DocumentFormat inputFormat, FileInfo outputFile, DocumentFormat outputFormat)
         {
-            ensureNotNull("inputFile", inputFile);
-            ensureNotNull("outputFile", outputFile);
+            EnsureNotNull("inputFile", inputFile);
+            EnsureNotNull("outputFile", outputFile);
 
-            bool tmpBool;
-            if (System.IO.File.Exists(inputFile.FullName))
-                tmpBool = true;
-            else
-                tmpBool = System.IO.Directory.Exists(inputFile.FullName);
+            var tmpBool = File.Exists(inputFile.FullName) || Directory.Exists(inputFile.FullName);
             if (!tmpBool)
             {
-                throw new System.ArgumentException("inputFile doesn't exist: " + inputFile);
+                throw new ArgumentException("inputFile doesn't exist: " + inputFile);
             }
             if (inputFormat == null)
             {
-                inputFormat = guessDocumentFormat(inputFile);
+                inputFormat = GuessDocumentFormat(inputFile);
             }
             if (outputFormat == null)
             {
-                outputFormat = guessDocumentFormat(outputFile);
+                outputFormat = GuessDocumentFormat(outputFile);
             }
             if (!inputFormat.Importable)
             {
-                throw new System.ArgumentException("unsupported input format: " + inputFormat.Name);
+                throw new ArgumentException("unsupported input format: " + inputFormat.Name);
             }
-            if (!inputFormat.isExportableTo(outputFormat))
+            if (!inputFormat.IsExportableTo(outputFormat))
             {
-                throw new System.ArgumentException("unsupported conversion: from " + inputFormat.Name + " to " + outputFormat.Name);
+                throw new ArgumentException("unsupported conversion: from " + inputFormat.Name + " to " + outputFormat.Name);
             }
-            convertInternal(inputFile, inputFormat, outputFile, outputFormat);
+            ConvertInternal(inputFile, inputFormat, outputFile, outputFormat);
         }
 
-        protected internal abstract void convertInternal(System.IO.Stream inputStream, DocumentFormat inputFormat, System.IO.Stream outputStream, DocumentFormat outputFormat);
+        protected internal abstract void ConvertInternal(Stream inputStream, DocumentFormat inputFormat, Stream outputStream, DocumentFormat outputFormat);
 
-        protected internal abstract void convertInternal(System.IO.FileInfo inputFile, DocumentFormat inputFormat, System.IO.FileInfo outputFile, DocumentFormat outputFormat);
+        protected internal abstract void ConvertInternal(FileInfo inputFile, DocumentFormat inputFormat, FileInfo outputFile, DocumentFormat outputFormat);
 
-        private void ensureNotNull(System.String argumentName, System.Object argumentValue)
+        private static void EnsureNotNull(string argumentName, object argumentValue)
         {
             if (argumentValue == null)
             {
-                throw new System.ArgumentException(argumentName + " is null");
+                throw new ArgumentException(argumentName + " is null");
             }
         }
 
-        private DocumentFormat guessDocumentFormat(System.IO.FileInfo file)
+        private DocumentFormat GuessDocumentFormat(FileInfo file)
         {
             //System.String extension = FilenameUtils.getExtension(file.Name);
             //System.String extension = System.IO.Path.GetExtension(file.Name);
-            System.String extension = file.Extension.Substring(1);
-            DocumentFormat format = DocumentFormatRegistry.getFormatByFileExtension(extension);
+            String extension = file.Extension.Substring(1);
+            DocumentFormat format = DocumentFormatRegistry.GetFormatByFileExtension(extension);
             if (format == null)
             {
-                throw new System.ArgumentException("unknown document format for file: " + file);
+                throw new ArgumentException("unknown document format for file: " + file);
             }
             return format;
         }
 
-        protected internal virtual void refreshDocument(XComponent document)
+        protected internal virtual void RefreshDocument(XComponent document)
         {
             XRefreshable refreshable = (XRefreshable)document;
             if (refreshable != null)
@@ -142,32 +137,37 @@ namespace NODConverter.OpenOffice.Converter
             }
         }
 
-        protected internal static PropertyValue property(System.String name, System.Object value_Renamed)
+        protected internal static PropertyValue Property(String name, Object valueRenamed)
         {
-            PropertyValue property = new PropertyValue();
-            property.Name = name;
+            PropertyValue property = new PropertyValue
+            {
+                Name = name,
+                Value = new Any(valueRenamed.GetType(), valueRenamed)
+            };
             //property.Value = new uno.Any("writer_pdf_Export"); value_Renamed;
-            property.Value = new uno.Any(value_Renamed.GetType(), value_Renamed);
             return property;
         }
 
-        protected internal static PropertyValue[] toPropertyValues(System.Collections.IDictionary properties)
+        protected internal static PropertyValue[] ToPropertyValues(IDictionary properties)
         {
             PropertyValue[] propertyValues = new PropertyValue[properties.Count];
             int i = 0;
             
-            for (System.Collections.IEnumerator iter = new SupportClass.HashSetSupport(properties).GetEnumerator(); iter.MoveNext(); )
+            for (IEnumerator iter = new SupportClass.HashSetSupport(properties).GetEnumerator(); iter.MoveNext(); )
             {
-               
-                System.Collections.DictionaryEntry entry = (System.Collections.DictionaryEntry)iter.Current;
-                System.Object value_Renamed = entry.Value;
-                if (value_Renamed is System.Collections.IDictionary)
+                if (iter.Current != null)
                 {
-                    // recursively convert nested Map to PropertyValue[]
-                    System.Collections.IDictionary subProperties = (System.Collections.IDictionary)value_Renamed;
-                    value_Renamed = toPropertyValues(subProperties);
+                    DictionaryEntry entry = (DictionaryEntry)iter.Current;
+                    Object valueRenamed = entry.Value;
+                    var renamed = valueRenamed as IDictionary;
+                    if (renamed != null)
+                    {
+                        // recursively Convert nested Map to PropertyValue[]
+                        IDictionary subProperties = renamed;
+                        valueRenamed = ToPropertyValues(subProperties);
+                    }
+                    propertyValues[i++] = Property((String)entry.Key, valueRenamed);
                 }
-                propertyValues[i++] = property((System.String)entry.Key, value_Renamed);
             }
             return propertyValues;
         }

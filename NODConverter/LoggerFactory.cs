@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Slf;
 
 namespace NODConverter
 {
     public class LoggerFactory
     {
-        public static Slf.ILogger GetLogger()
+        public static ILogger GetLogger()
         {
-            Slf.ILogger logger = new Slf.ConsoleLogger();
-            Slf.LoggerService.SetLogger(logger);
-            return Slf.LoggerService.GetLogger();
+            ILogger logger = new ConsoleLogger();
+            LoggerService.SetLogger(logger);
+            return LoggerService.GetLogger();
         }
     }
 }

@@ -1,28 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections;
+using System.IO;
+using Dotnet.Commons.IO;
 using NODConverter.OpenOffice.Connection;
+using Slf;
+using unoidl.com.sun.star.frame;
+using unoidl.com.sun.star.lang;
+using unoidl.com.sun.star.task;
+using unoidl.com.sun.star.ucb;
+using unoidl.com.sun.star.util;
+
 namespace NODConverter.OpenOffice.Converter
 {
-    using PropertyValue = unoidl.com.sun.star.beans.PropertyValue;
-    using IOUtils = Dotnet.Commons.IO.StreamUtils;
-    using Logger = Slf.ILogger;
-    using XComponentLoader = unoidl.com.sun.star.frame.XComponentLoader;
-    using XStorable = unoidl.com.sun.star.frame.XStorable;
-    using IllegalArgumentException = unoidl.com.sun.star.lang.IllegalArgumentException;
-    using XComponent = unoidl.com.sun.star.lang.XComponent;
-    using ErrorCodeIOException = unoidl.com.sun.star.task.ErrorCodeIOException;
-    using XFileIdentifierConverter = unoidl.com.sun.star.ucb.XFileIdentifierConverter;
+    using IOUtils = StreamUtils;
+    using Logger = ILogger;
 
-    using CloseVetoException = unoidl.com.sun.star.util.CloseVetoException;
-    using XCloseable = unoidl.com.sun.star.util.XCloseable;
     /// <summary>
     /// Default file-based <seealso cref="DocumentConverter"/> implementation.
-    /// <p>
+    /// <p/>
     /// This implementation passes document data to and from the OpenOffice.org
     /// service as file URLs.
-    /// <p>
+    /// <p/>
     /// File-based conversions are faster than stream-based ones (provided by
     /// <seealso cref="StreamOpenOfficeDocumentConverter"/>) but they require the
     /// OpenOffice.org service to be running locally and have the correct
@@ -32,9 +30,9 @@ namespace NODConverter.OpenOffice.Converter
     public class OpenOfficeDocumentConverter : AbstractOpenOfficeDocumentConverter
     {
 
-        //UPGRADE_NOTE: Final 已从“logger ”的声明中移除。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-        //UPGRADE_NOTE: “logger”的初始化已移动到 static method“com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter”。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
-        private static readonly Logger logger;
+        //UPGRADE_NOTE: Final 已从“Logger ”的声明中移除。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
+        //UPGRADE_NOTE: “Logger”的初始化已移动到 static method“com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter”。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
+        private static readonly Logger Logger;
 
         public OpenOfficeDocumentConverter(IOpenOfficeConnection connection)
             : base(connection)
@@ -47,46 +45,42 @@ namespace NODConverter.OpenOffice.Converter
         }
 
         /// <summary> In this file-based implementation, streams are emulated using temporary files.</summary>
-        protected internal override void convertInternal(System.IO.Stream inputStream, DocumentFormat inputFormat, System.IO.Stream outputStream, DocumentFormat outputFormat)
+        protected internal override void ConvertInternal(Stream inputStream, DocumentFormat inputFormat, Stream outputStream, DocumentFormat outputFormat)
         {
-            System.IO.FileInfo inputFile = null;
-            System.IO.FileInfo outputFile = null;
+            FileInfo inputFile = null;
+            FileInfo outputFile = null;
             try
             {
                 //UPGRADE_ISSUE: 未转换 方法“java.io.File.createTempFile”。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1000_javaioFilecreateTempFile_javalangString_javalangString'"
-                inputFile = new System.IO.FileInfo(string.Format("document.{0}", inputFormat.FileExtension));
-                inputFile.Attributes = System.IO.FileAttributes.Temporary;
-                System.IO.Stream inputFileStream = null;
-                try
+                inputFile = new FileInfo(string.Format("document.{0}", inputFormat.FileExtension))
                 {
-                    //UPGRADE_TODO: 构造函数“java.io.FileOutputStream.FileOutputStream”被转换为具有不同行为的 'System.IO.FileStream.FileStream'。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javaioFileOutputStreamFileOutputStream_javaioFile'"
-                    inputFileStream = new System.IO.FileStream(inputFile.FullName, System.IO.FileMode.Create);
-                    IOUtils.Copy(inputStream, inputFileStream);
-                }
-                finally
-                {
-                    //IOUtils.closeQuietly(inputFileStream);
-                }
+                    Attributes = FileAttributes.Temporary
+                };
+                //UPGRADE_TODO: 构造函数“java.io.FileOutputStream.FileOutputStream”被转换为具有不同行为的 'System.IO.FileStream.FileStream'。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javaioFileOutputStreamFileOutputStream_javaioFile'"
+                Stream inputFileStream = new FileStream(inputFile.FullName, FileMode.Create);
+                IOUtils.Copy(inputStream, inputFileStream);
 
                 //UPGRADE_ISSUE: 未转换 方法“java.io.File.createTempFile”。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1000_javaioFilecreateTempFile_javalangString_javalangString'"
 
-                outputFile = new System.IO.FileInfo(string.Format("document.{0}", outputFormat.FileExtension));
-                outputFile.Attributes = System.IO.FileAttributes.Temporary;
-                convert(inputFile, inputFormat, outputFile, outputFormat);
-                System.IO.Stream outputFileStream = null;
+                outputFile = new FileInfo(string.Format("document.{0}", outputFormat.FileExtension))
+                {
+                    Attributes = FileAttributes.Temporary
+                };
+                Convert(inputFile, inputFormat, outputFile, outputFormat);
+                Stream outputFileStream = null;
                 try
                 {
                     //UPGRADE_TODO: 构造函数“java.io.FileInputStream.FileInputStream”被转换为具有不同行为的 'System.IO.FileStream.FileStream'。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javaioFileInputStreamFileInputStream_javaioFile'"
-                    outputFileStream = new System.IO.FileStream(outputFile.FullName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                    outputFileStream = new FileStream(outputFile.FullName, FileMode.Open, FileAccess.Read);
                     IOUtils.Copy(outputFileStream, outputStream);
                 }
                 finally
                 {
                     //IOUtils.closeQuietly(outputFileStream);
-                    outputFileStream.Close();
+                    if (outputFileStream != null) outputFileStream.Close();
                 }
             }
-            catch (System.IO.IOException ioException)
+            catch (IOException ioException)
             {
                 throw new OpenOfficeException("conversion failed", ioException);
             }
@@ -94,72 +88,60 @@ namespace NODConverter.OpenOffice.Converter
             {
                 if (inputFile != null)
                 {
-                    bool tmpBool;
-                    if (System.IO.File.Exists(inputFile.FullName))
+                    if (File.Exists(inputFile.FullName))
                     {
-                        System.IO.File.Delete(inputFile.FullName);
-                        tmpBool = true;
+                        File.Delete(inputFile.FullName);
                     }
-                    else if (System.IO.Directory.Exists(inputFile.FullName))
+                    else if (Directory.Exists(inputFile.FullName))
                     {
-                        System.IO.Directory.Delete(inputFile.FullName);
-                        tmpBool = true;
+                        Directory.Delete(inputFile.FullName);
                     }
-                    else
-                        tmpBool = false;
-                    bool generatedAux = tmpBool;
                 }
                 if (outputFile != null)
                 {
-                    bool tmpBool2;
-                    if (System.IO.File.Exists(outputFile.FullName))
+                    if (File.Exists(outputFile.FullName))
                     {
-                        System.IO.File.Delete(outputFile.FullName);
-                        tmpBool2 = true;
+                        File.Delete(outputFile.FullName);
                     }
-                    else if (System.IO.Directory.Exists(outputFile.FullName))
+                    else if (Directory.Exists(outputFile.FullName))
                     {
-                        System.IO.Directory.Delete(outputFile.FullName);
-                        tmpBool2 = true;
+                        Directory.Delete(outputFile.FullName);
                     }
-                    else
-                        tmpBool2 = false;
-                    bool generatedAux2 = tmpBool2;
                 }
             }
         }
 
-        protected internal override void convertInternal(System.IO.FileInfo inputFile, DocumentFormat inputFormat, System.IO.FileInfo outputFile, DocumentFormat outputFormat)
+        protected internal override void ConvertInternal(FileInfo inputFile, DocumentFormat inputFormat, FileInfo outputFile, DocumentFormat outputFormat)
         {
             //UPGRADE_TODO: Class“java.util.HashMap”被转换为具有不同行为的 'System.Collections.Hashtable'。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javautilHashMap'"
-            System.Collections.IDictionary loadProperties = new System.Collections.Hashtable();
+            IDictionary loadProperties = new Hashtable();
             SupportClass.MapSupport.PutAll(loadProperties, DefaultLoadProperties);
             SupportClass.MapSupport.PutAll(loadProperties, inputFormat.ImportOptions);
 
-            System.Collections.IDictionary storeProperties = outputFormat.getExportOptions(inputFormat.Family);
+            IDictionary storeProperties = outputFormat.GetExportOptions(inputFormat.Family);
 
-            lock (openOfficeConnection)
+            lock (OpenOfficeConnection)
             {
-                XFileIdentifierConverter fileContentProvider = openOfficeConnection.FileContentProvider;
-                System.String inputUrl = fileContentProvider.getFileURLFromSystemPath("", inputFile.FullName);
-                System.String outputUrl = fileContentProvider.getFileURLFromSystemPath("", outputFile.FullName);
+                XFileIdentifierConverter fileContentProvider = OpenOfficeConnection.FileContentProvider;
+                String inputUrl = fileContentProvider.getFileURLFromSystemPath("", inputFile.FullName);
+                String outputUrl = fileContentProvider.getFileURLFromSystemPath("", outputFile.FullName);
 
-                loadAndExport(inputUrl, loadProperties, outputUrl, storeProperties);
+                LoadAndExport(inputUrl, loadProperties, outputUrl, storeProperties);
             }
         }
 
-        private void loadAndExport(System.String inputUrl, System.Collections.IDictionary loadProperties, System.String outputUrl, System.Collections.IDictionary storeProperties)
+        private void LoadAndExport(String inputUrl, IDictionary loadProperties, String outputUrl, IDictionary storeProperties)
         {
             XComponent document;
             try
             {
-                document = loadDocument(inputUrl, loadProperties);
+                document = LoadDocument(inputUrl, loadProperties);
             }
-            catch (ErrorCodeIOException errorCodeIOException)
+            catch (ErrorCodeIOException errorCodeIoException)
             {
-                throw new OpenOfficeException("conversion failed: could not load input document; OOo errorCode: " + errorCodeIOException.ErrCode, errorCodeIOException);
+                throw new OpenOfficeException("conversion failed: could not load input document; OOo errorCode: " + errorCodeIoException.ErrCode, errorCodeIoException);
             }
-            catch (System.Exception otherException)
+            catch (Exception otherException)
             {
                 throw new OpenOfficeException("conversion failed: could not load input document", otherException);
             }
@@ -170,45 +152,45 @@ namespace NODConverter.OpenOffice.Converter
 
             try
             {
-                refreshDocument(document);//使用此函数后Excel2pdf 提示异常：无法将透明代理强制转换为类型XRefreshable
+                RefreshDocument(document);//使用此函数后Excel2pdf 提示异常：无法将透明代理强制转换为类型XRefreshable
             }
             catch
             {
-
+                // ignored
             }
 
             try
             {
                 storeDocument(document, outputUrl, storeProperties);
             }
-            catch (ErrorCodeIOException errorCodeIOException)
+            catch (ErrorCodeIOException errorCodeIoException)
             {
-                throw new OpenOfficeException("conversion failed: could not save output document; OOo errorCode: " + errorCodeIOException.ErrCode, errorCodeIOException);
+                throw new OpenOfficeException("conversion failed: could not save output document; OOo errorCode: " + errorCodeIoException.ErrCode, errorCodeIoException);
             }
-            catch (System.Exception otherException)
+            catch (Exception otherException)
             {
                 throw new OpenOfficeException("conversion failed: could not save output document", otherException);
             }
         }
 
-        private XComponent loadDocument(System.String inputUrl, System.Collections.IDictionary loadProperties)
+        private XComponent LoadDocument(String inputUrl, IDictionary loadProperties)
         {
-            XComponentLoader desktop = openOfficeConnection.Desktop;
+            XComponentLoader desktop = OpenOfficeConnection.Desktop;
             //PropertyValue[] propertyValue2 = new PropertyValue[1];
             //PropertyValue aProperty = new PropertyValue();
             //aProperty.Name = "Hidden";
             //aProperty.Value = new uno.Any(true);
             //propertyValue2[0] = aProperty;
-            PropertyValue[] propertyValue = toPropertyValues(loadProperties);
-            return desktop.loadComponentFromURL(inputUrl, "_blank", 0, toPropertyValues(loadProperties));//toPropertyValues(loadProperties)
+            ToPropertyValues(loadProperties);
+            return desktop.loadComponentFromURL(inputUrl, "_blank", 0, ToPropertyValues(loadProperties));//toPropertyValues(loadProperties)
         }
 
-        private void storeDocument(XComponent document, System.String outputUrl, System.Collections.IDictionary storeProperties)
+        private void storeDocument(XComponent document, String outputUrl, IDictionary storeProperties)
         {
             try
             {
                 XStorable storable = (XStorable)document;
-                storable.storeToURL(outputUrl, toPropertyValues(storeProperties));
+                storable.storeToURL(outputUrl, ToPropertyValues(storeProperties));
             }
             finally
             {
@@ -221,7 +203,7 @@ namespace NODConverter.OpenOffice.Converter
                     }
                     catch (CloseVetoException closeVetoException)
                     {
-                        logger.Warn("document.close() vetoed:"+closeVetoException.Message);
+                        Logger.Warn("document.close() vetoed:"+closeVetoException.Message);
                     }
                 }
                 else
@@ -232,7 +214,7 @@ namespace NODConverter.OpenOffice.Converter
         }
         static OpenOfficeDocumentConverter()
         {
-            logger = LoggerFactory.GetLogger();
+            Logger = LoggerFactory.GetLogger();
         }
     }
 }
