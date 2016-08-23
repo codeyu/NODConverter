@@ -38,7 +38,8 @@ namespace NODConverter.OpenOffice.Connection
             try
             {
                 InitUno();
-                var sock = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
+                Utils.Connect();
+                //var sock = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
                 //XComponentContext localContext = Bootstrap.bootstrap();
                 XComponentContext localContext = Bootstrap.defaultBootstrap_InitialComponentContext();
                 XMultiComponentFactory localServiceManager = localContext.getServiceManager();
