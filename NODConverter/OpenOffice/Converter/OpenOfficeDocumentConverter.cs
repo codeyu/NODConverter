@@ -150,7 +150,7 @@ namespace NODConverter.OpenOffice.Converter
 
             try
             {
-                RefreshDocument(document);//使用此函数后Excel2pdf 提示异常：无法将透明代理强制转换为类型XRefreshable
+                RefreshDocument(document); // xls to pdf, Exception:Unable to cast transparent proxy to type 'unoidl.com.sun.star.util.XRefreshable'.
             }
             catch
             {

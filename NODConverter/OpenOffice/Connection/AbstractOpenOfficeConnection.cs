@@ -37,7 +37,7 @@ namespace NODConverter.OpenOffice.Connection
             Logger.Debug("connecting");
             try
             {
-                InitUno();
+                EnvUtils.InitUno();
                 SocketUtils.Connect();
                 //var sock = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
                 XComponentContext localContext = Bootstrap.bootstrap();
@@ -163,28 +163,6 @@ namespace NODConverter.OpenOffice.Connection
             }
         }
 
-        private static void InitUno()
-        {
-            String unoPath = "";
-            // access 32bit registry entry for latest LibreOffice for Current User
-            Microsoft.Win32.RegistryKey hkcuView32 = Microsoft.Win32.RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.CurrentUser, Microsoft.Win32.RegistryView.Registry32);
-            Microsoft.Win32.RegistryKey hkcuUnoInstallPathKey = hkcuView32.OpenSubKey(@"SOFTWARE\LibreOffice\UNO\InstallPath", false);
-            if (hkcuUnoInstallPathKey != null && hkcuUnoInstallPathKey.ValueCount > 0)
-            {
-                unoPath = (string)hkcuUnoInstallPathKey.GetValue(hkcuUnoInstallPathKey.GetValueNames()[hkcuUnoInstallPathKey.ValueCount - 1]);
-            }
-            else
-            {
-                // access 32bit registry entry for latest LibreOffice for Local Machine (All Users)
-                Microsoft.Win32.RegistryKey hklmView32 = Microsoft.Win32.RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.LocalMachine, Microsoft.Win32.RegistryView.Registry32);
-                Microsoft.Win32.RegistryKey hklmUnoInstallPathKey = hklmView32.OpenSubKey(@"SOFTWARE\LibreOffice\UNO\InstallPath", false);
-                if (hklmUnoInstallPathKey != null && hklmUnoInstallPathKey.ValueCount > 0)
-                {
-                    unoPath = (string)hklmUnoInstallPathKey.GetValue(hklmUnoInstallPathKey.GetValueNames()[hklmUnoInstallPathKey.ValueCount - 1]);
-                }
-            }
-            Environment.SetEnvironmentVariable("UNO_PATH", unoPath, EnvironmentVariableTarget.Process); 
-            Environment.SetEnvironmentVariable("PATH", Environment.GetEnvironmentVariable("PATH") + @";" + unoPath, EnvironmentVariableTarget.Process);
-        }
+        
     }
 }

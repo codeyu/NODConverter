@@ -75,6 +75,12 @@ namespace NODConverter.Cli
             }
 
             IOpenOfficeConnection connection = new SocketOpenOfficeConnection(port);
+            OfficeInfo  oo = EnvUtils.Get();
+            if(oo.Kind == OfficeKind.Unknown)
+            {
+                Console.Out.WriteLine("please setup OpenOffice or LibreOffice!");
+                return;
+            }
             try
             {
                 if (verbose)
@@ -85,11 +91,17 @@ namespace NODConverter.Cli
             }
             catch (Exception)
             {
-                Console.Error.WriteLine("ERROR: connection failed. Please make sure OpenOffice.org is running and listening on port " + port + ".");
-                Environment.Exit(ExitCodeConnectionFailed);
+                string CmdArguments = string.Format("-headless -accept=\"socket,host={0},port={1};urp;\" -nofirststartwizard", SocketOpenOfficeConnection.DefaultHost, SocketOpenOfficeConnection.DefaultPort);
+                if(!EnvUtils.RunCmd(oo.OfficeUnoPath, "soffice", CmdArguments))
+                {
+                    Console.Error.WriteLine("ERROR: connection failed. Please make sure OpenOffice.org is running and listening on port " + port + ".");
+                    Environment.Exit(ExitCodeConnectionFailed);
+                }
+                
             }
             try
             {
+                
                 IDocumentConverter converter = new OpenOfficeDocumentConverter(connection, registry);
                 if (outputFormat == null)
                 {

@@ -67,6 +67,7 @@
     <Compile Include="DefaultDocumentFormatRegistry.cs" />
     <Compile Include="DocumentFamily.cs" />
     <Compile Include="DocumentFormat.cs" />
+    <Compile Include="EnvUtils.cs" />
     <Compile Include="IDocumentConverter.cs" />
     <Compile Include="IDocumentFormatRegistry.cs" />
     <Compile Include="LoggerFactory.cs" />
