@@ -10,7 +10,7 @@ using unoidl.com.sun.star.lang;
 namespace NODConverter.OpenOffice.Converter
 {
     /// <summary>
-    /// Alternative stream-based <seealso cref="DocumentConverter"/> implementation.
+    /// Alternative stream-based <seealso cref="OpenOfficeDocumentConverter"/> implementation.
     /// <p/>
     /// This implementation passes document data to and from the OpenOffice.org
     /// service as streams.
@@ -26,7 +26,7 @@ namespace NODConverter.OpenOffice.Converter
     /// <p/>
     /// Use this implementation only if <seealso cref="OpenOfficeDocumentConverter"/> is not possible.
     /// </summary>
-    /// <seealso cref= OpenOfficeDocumentConverter </seealso>
+    /// <seealso cref= "OpenOfficeDocumentConverter"> </seealso>
     public class StreamOpenOfficeDocumentConverter : AbstractOpenOfficeDocumentConverter
     {
 
@@ -87,6 +87,14 @@ namespace NODConverter.OpenOffice.Converter
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputStream"></param>
+        /// <param name="importOptions"></param>
+        /// <param name="outputStream"></param>
+        /// <param name="exportOptions"></param>
+        /// <remarks></remarks>
         private void LoadAndExport(Stream inputStream, IDictionary importOptions, Stream outputStream, IDictionary exportOptions)
         {
             XComponentLoader desktop = OpenOfficeConnection.Desktop;

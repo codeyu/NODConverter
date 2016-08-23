@@ -38,10 +38,10 @@ namespace NODConverter.OpenOffice.Connection
             try
             {
                 InitUno();
-                Utils.Connect();
+                SocketUtils.Connect();
                 //var sock = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
-                //XComponentContext localContext = Bootstrap.bootstrap();
-                XComponentContext localContext = Bootstrap.defaultBootstrap_InitialComponentContext();
+                XComponentContext localContext = Bootstrap.bootstrap();
+                //XComponentContext localContext = Bootstrap.defaultBootstrap_InitialComponentContext();
                 XMultiComponentFactory localServiceManager = localContext.getServiceManager();
                 XConnector connector = (XConnector)localServiceManager.createInstanceWithContext("com.sun.star.connection.Connector", localContext);
                 XConnection connection = connector.connect(_connectionString);
@@ -50,14 +50,6 @@ namespace NODConverter.OpenOffice.Connection
                 _bridgeComponent = (XComponent)_bridge;
                 _bridgeComponent.addEventListener(this);
                 _serviceManager = (XMultiComponentFactory)_bridge.getInstance("StarOffice.ServiceManager");
-                //另一种连接方式------------begin
-                //XUnoUrlResolver xUrlResolver = (XUnoUrlResolver)localServiceManager.createInstanceWithContext("com.sun.star.bridge.UnoUrlResolver", localContext);
-
-                //// able to connect successfully 
-                //XMultiServiceFactory multiServiceFactory = (XMultiServiceFactory)xUrlResolver.resolve("uno:socket,host=localhost,port=8100;urp;StarOffice.ServiceManager"); 
-                //---------------------------------------end
-
-
                 XPropertySet properties = (XPropertySet)_serviceManager;
                 // Get the default context from the office server. 
                 var oDefaultContext = properties.getPropertyValue("DefaultContext");
@@ -79,6 +71,7 @@ namespace NODConverter.OpenOffice.Connection
         [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual void Disconnect()
         {
+            SocketUtils.Disconnect();
             Logger.Debug("disconnecting");
             _expectingDisconnection = true;
             _bridgeComponent.dispose();

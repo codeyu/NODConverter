@@ -92,7 +92,7 @@ namespace NODConverter
         }
     }
 
-    public class Utils
+    public class SocketUtils
     {
         [StructLayout(LayoutKind.Sequential, CharSet = System.Runtime.InteropServices.CharSet.Ansi)]
         public struct WSAData
@@ -124,11 +124,14 @@ namespace NODConverter
             data.wVersion = 2;
 
             result = WSAStartup(36, ref data);
-            if (result == 0)    //Windows Socket erfolgreich initialisiert
+            if (result != 0)  
             {
-                Console.WriteLine(data.szDescription);
-                //WSACleanup();
+                throw new Exception("socket connect failure!");
             }
+        }
+        public static void Disconnect()
+        {
+            WSACleanup();
         }
     }
 }

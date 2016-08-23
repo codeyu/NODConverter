@@ -17,7 +17,7 @@
         }
 
         public SocketOpenOfficeConnection(string host, int port)
-            : base("socket,host=" + host + ",port=" + port + ",tcpNoDelay=1")//用 pipe代替 socket试试。
+            : base("socket,host=" + host + ",port=" + port + ",tcpNoDelay=1")
         {
         }
     }

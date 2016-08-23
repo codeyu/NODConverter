@@ -16,7 +16,7 @@ namespace NODConverter.OpenOffice.Converter
     using Logger = ILogger;
 
     /// <summary>
-    /// Default file-based <seealso cref="DocumentConverter"/> implementation.
+    /// Default file-based <seealso cref="AbstractOpenOfficeDocumentConverter"/> implementation.
     /// <p/>
     /// This implementation passes document data to and from the OpenOffice.org
     /// service as file URLs.
@@ -26,12 +26,11 @@ namespace NODConverter.OpenOffice.Converter
     /// OpenOffice.org service to be running locally and have the correct
     /// permissions to the files.
     /// </summary>
-    /// <seealso cref= StreamOpenOfficeDocumentConverter </seealso>
+    /// <seealso cref= "StreamOpenOfficeDocumentConverter"> </seealso>
     public class OpenOfficeDocumentConverter : AbstractOpenOfficeDocumentConverter
     {
 
-        //UPGRADE_NOTE: Final 已从“Logger ”的声明中移除。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-        //UPGRADE_NOTE: “Logger”的初始化已移动到 static method“com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter”。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1005'"
+        
         private static readonly Logger Logger;
 
         public OpenOfficeDocumentConverter(IOpenOfficeConnection connection)
@@ -51,17 +50,16 @@ namespace NODConverter.OpenOffice.Converter
             FileInfo outputFile = null;
             try
             {
-                //UPGRADE_ISSUE: 未转换 方法“java.io.File.createTempFile”。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1000_javaioFilecreateTempFile_javalangString_javalangString'"
+
                 inputFile = new FileInfo(string.Format("document.{0}", inputFormat.FileExtension))
                 {
                     Attributes = FileAttributes.Temporary
                 };
-                //UPGRADE_TODO: 构造函数“java.io.FileOutputStream.FileOutputStream”被转换为具有不同行为的 'System.IO.FileStream.FileStream'。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javaioFileOutputStreamFileOutputStream_javaioFile'"
+               
                 Stream inputFileStream = new FileStream(inputFile.FullName, FileMode.Create);
                 IOUtils.Copy(inputStream, inputFileStream);
 
-                //UPGRADE_ISSUE: 未转换 方法“java.io.File.createTempFile”。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1000_javaioFilecreateTempFile_javalangString_javalangString'"
-
+                
                 outputFile = new FileInfo(string.Format("document.{0}", outputFormat.FileExtension))
                 {
                     Attributes = FileAttributes.Temporary
@@ -70,7 +68,7 @@ namespace NODConverter.OpenOffice.Converter
                 Stream outputFileStream = null;
                 try
                 {
-                    //UPGRADE_TODO: 构造函数“java.io.FileInputStream.FileInputStream”被转换为具有不同行为的 'System.IO.FileStream.FileStream'。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javaioFileInputStreamFileInputStream_javaioFile'"
+                    
                     outputFileStream = new FileStream(outputFile.FullName, FileMode.Open, FileAccess.Read);
                     IOUtils.Copy(outputFileStream, outputStream);
                 }
@@ -113,7 +111,7 @@ namespace NODConverter.OpenOffice.Converter
 
         protected internal override void ConvertInternal(FileInfo inputFile, DocumentFormat inputFormat, FileInfo outputFile, DocumentFormat outputFormat)
         {
-            //UPGRADE_TODO: Class“java.util.HashMap”被转换为具有不同行为的 'System.Collections.Hashtable'。 "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javautilHashMap'"
+            
             IDictionary loadProperties = new Hashtable();
             SupportClass.MapSupport.PutAll(loadProperties, DefaultLoadProperties);
             SupportClass.MapSupport.PutAll(loadProperties, inputFormat.ImportOptions);

@@ -30,59 +30,59 @@ namespace NODConverter.OpenOffice.Converter
 
     public class XInputStreamWrapper : XInputStream, XSeekable
     {
-        private Stream instream;
+        private readonly Stream _instream;
 
         public XInputStreamWrapper(Stream instream)
         {
-            this.instream = instream;
+            _instream = instream;
         }
 
         // XInputStream interface 
         public int readBytes(out byte[] data, int length)
         {
-            int remaining = (int)(instream.Length - instream.Position);
+            int remaining = (int)(_instream.Length - _instream.Position);
             int l = length > remaining ? remaining : length;
             data = new byte[length];
-            return instream.Read(data, 0, l);
+            return _instream.Read(data, 0, l);
         }
 
         public int readSomeBytes(out byte[] data, int length)
         {
-            int remaining = (int)(instream.Length - instream.Position);
+            int remaining = (int)(_instream.Length - _instream.Position);
             int l = length > remaining ? remaining : length;
             data = new byte[length];
-            return instream.Read(data, 0, l);
+            return _instream.Read(data, 0, l);
         }
 
         public void skipBytes(int nToSkip)
         {
-            instream.Seek(nToSkip, SeekOrigin.Current);
+            _instream.Seek(nToSkip, SeekOrigin.Current);
         }
 
         public int available()
         {
-            return (int)(instream.Length - instream.Position);
+            return (int)(_instream.Length - _instream.Position);
         }
 
         public void closeInput()
         {
-            instream.Close();
+            _instream.Close();
         }
 
         // XSeekable interface 
         public long getPosition()
         {
-            return instream.Position;
+            return _instream.Position;
         }
 
         public long getLength()
         {
-            return instream.Length;
+            return _instream.Length;
         }
 
         public void seek(long pos)
         {
-            instream.Seek(pos, SeekOrigin.Begin);
+            _instream.Seek(pos, SeekOrigin.Begin);
         }
     } 
 }

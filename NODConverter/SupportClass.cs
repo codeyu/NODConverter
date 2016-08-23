@@ -10,6 +10,7 @@
 //
 
 using System;
+using System.Linq;
 
 namespace NODConverter
 {
@@ -160,13 +161,9 @@ namespace NODConverter
                     var values = d.GetValues(i);
                     if (values != null)
                     {
-                        foreach (var val in values)
+                        if (values.Any(val => val.Equals(obj)))
                         {
-                            if (val.Equals(obj))
-                            {
-                                contained = true;
-                                break;
-                            }
+                            contained = true;
                         }
                     }
                 }
