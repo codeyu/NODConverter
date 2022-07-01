@@ -81,7 +81,13 @@ namespace NODConverter
 					RedirectStandardOutput = true,
 					RedirectStandardError = true
 				};
+
             Process p = Process.Start(processStartInfo);
+
+            if (p.WaitForExit(20000))
+            {
+                return p.ExitCode == 0;
+            }
             return p.ExitCode == 0;
         }
     }

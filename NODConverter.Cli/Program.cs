@@ -87,10 +87,17 @@ namespace NODConverter.Cli
                 {
                     Console.Out.WriteLine("-- connecting to OpenOffice.org on port " + port);
                 }
+
+                // Connect to existing instance
+
                 connection.Connect();
+
             }
             catch (Exception)
             {
+
+                // Cannot connect to existing instance - start a new one
+
                 string CmdArguments = string.Format("-headless -accept=\"socket,host={0},port={1};urp;\" -nofirststartwizard", SocketOpenOfficeConnection.DefaultHost, SocketOpenOfficeConnection.DefaultPort);
                 if(!EnvUtils.RunCmd(oo.OfficeUnoPath, "soffice", CmdArguments))
                 {
