@@ -71,6 +71,9 @@ namespace NODConverter
 
         public static bool RunCmd(string workingPath, string cmd, string cmdArguments)
         {
+            Console.WriteLine("Create new Instance");
+            Console.WriteLine(String.Format("{0} {1}", cmd, cmdArguments));
+
             var processStartInfo = new ProcessStartInfo(cmd, cmdArguments)
 				{
 					WindowStyle = ProcessWindowStyle.Hidden,
@@ -83,7 +86,7 @@ namespace NODConverter
 				};
 
             Process p = Process.Start(processStartInfo);
-
+            
             if (p.WaitForExit(20000))
             {
                 return p.ExitCode == 0;
