@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using net.sf.dotnetcli;
 using NODConverter.OpenOffice.Connection;
@@ -25,44 +26,27 @@ namespace NODConverter.Cli
     class Program
     {
         private static readonly Option OptionOutputFormat = new Option("f", "output-format", true, "output format (e.g. pdf)");
-        private static readonly Option OptionPort = new Option("p", "port", true, "OpenOffice.org port");
-        private static readonly Option OptionVerbose = new Option("v", "verbose", false, "verbose");
-        private static readonly Option OptionXmlRegistry = new Option("x", "xml-registry", true, "XML document format registry");
         private static readonly Options Options = InitOptions();
 
+        private static readonly int[] avaliblePorts = ConfigurationHelper.GetInt32Array("AvaliblePorts");
+
         private const int ExitCodeConnectionFailed = 1;
-        //private const int ExitCodeXmlRegistryNotFound = 254;
         private const int ExitCodeTooFewArgs = 255;
 
         private static Options InitOptions()
         {
             Options options = new Options();
             options.AddOption(OptionOutputFormat);
-            options.AddOption(OptionPort);
-            options.AddOption(OptionVerbose);
-            options.AddOption(OptionXmlRegistry);
             return options;
         }
+
         [STAThread]
         static void Main(string[] arguments)
         {
             ICommandLineParser commandLineParser = new PosixParser();
             CommandLine commandLine = commandLineParser.Parse(Options, arguments);
 
-            int port = SocketOpenOfficeConnection.DefaultPort;
-            if (commandLine.HasOption(OptionPort.Opt))
-            {
-                port = Convert.ToInt32(commandLine.GetOptionValue(OptionPort.Opt));
-            }
-
-            String outputFormat = null;
-            if (commandLine.HasOption(OptionOutputFormat.Opt))
-            {
-                outputFormat = commandLine.GetOptionValue(OptionOutputFormat.Opt);
-            }
-
-            bool verbose = commandLine.HasOption(OptionVerbose.Opt);
-  
+            String outputFormat = commandLine.HasOption(OptionOutputFormat.Opt) ? commandLine.GetOptionValue(OptionOutputFormat.Opt) : null;
             IDocumentFormatRegistry registry = new DefaultDocumentFormatRegistry();
 
             String[] fileNames = commandLine.Args;
@@ -74,74 +58,41 @@ namespace NODConverter.Cli
                 Environment.Exit(ExitCodeTooFewArgs);
             }
 
-            IOpenOfficeConnection connection = new SocketOpenOfficeConnection(port);
-            OfficeInfo  oo = EnvUtils.Get();
-            if(oo.Kind == OfficeKind.Unknown)
+            NodProcessor nodProcessor = new NodProcessor();
+
+            int portCount = avaliblePorts.Length,
+                initialPortIndex = new Random().Next(0, portCount - 1),
+                portIndex = initialPortIndex,
+                port;
+
+            bool nodProcessed = false;
+
+            for (int i = 0; i < portCount; i++)
             {
-                Console.Out.WriteLine("please setup OpenOffice or LibreOffice!");
-                return;
-            }
-            try
-            {
-                if (verbose)
+                port = avaliblePorts[portIndex];
+
+                try
                 {
-                    Console.Out.WriteLine("-- connecting to OpenOffice.org on port " + port);
+                    nodProcessor.ProcessDocument(port, outputFormat, true, registry, fileNames);
+                    nodProcessed = true;
+                    break;
+                }
+                catch (ArgumentException ex)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+
                 }
 
-                // Connect to existing instance
+                portIndex = portIndex == portCount - 1 ? 0 : portIndex + 1;
+            }
 
-                connection.Connect();
-
-            }
-            catch (Exception)
+            if (!nodProcessed)
             {
-
-                // Cannot connect to existing instance - start a new one
-
-                string CmdArguments = string.Format("-headless -accept=\"socket,host={0},port={1};urp;\" -nofirststartwizard", SocketOpenOfficeConnection.DefaultHost, SocketOpenOfficeConnection.DefaultPort);
-                if(!EnvUtils.RunCmd(oo.OfficeUnoPath, "soffice", CmdArguments))
-                {
-                    Console.Error.WriteLine("ERROR: connection failed. Please make sure OpenOffice.org is running and listening on port " + port + ".");
-                    Environment.Exit(ExitCodeConnectionFailed);
-                }
-                
+                throw new Exception("NodProcessor unable to process Document");
             }
-            try
-            {
-                
-                IDocumentConverter converter = new OpenOfficeDocumentConverter(connection, registry);
-                if (outputFormat == null)
-                {
-                    FileInfo inputFile = new FileInfo(fileNames[0]);
-                    FileInfo outputFile = new FileInfo(fileNames[1]);
-                    ConvertOne(converter, inputFile, outputFile, verbose);
-                }
-                else
-                {
-                    foreach (var t in fileNames)
-                    {
-                        var inputFile = new FileInfo(t);
-                        var outputFile = new FileInfo(inputFile.FullName.Remove(inputFile.FullName.LastIndexOf(".", StringComparison.Ordinal)) + "." + outputFormat);
-                        ConvertOne(converter, inputFile, outputFile, verbose);
-                    }
-                }
-            }
-            finally
-            {
-                if (verbose)
-                {
-                    Console.Out.WriteLine("-- disconnecting");
-                }
-                connection.Disconnect();
-            }
-        }
-        private static void ConvertOne(IDocumentConverter converter, FileInfo inputFile, FileInfo outputFile, bool verbose)
-        {
-            if (verbose)
-            {
-                Console.Out.WriteLine("-- converting " + inputFile + " to " + outputFile);
-            }
-            converter.Convert(inputFile, outputFile);
         }
     }
 }
