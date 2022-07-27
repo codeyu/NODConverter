@@ -61,7 +61,7 @@ namespace NODConverter.Cli
             NodProcessor nodProcessor = new NodProcessor();
 
             int portCount = avaliblePorts.Length,
-                initialPortIndex = new Random().Next(0, portCount - 1),
+                initialPortIndex = new Random().Next(0, portCount),
                 portIndex = initialPortIndex,
                 port;
 
