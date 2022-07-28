@@ -79,7 +79,7 @@ namespace NODConverter.Cli
                 }
                 catch (ArgumentException ex)
                 {
-                    throw;
+                    throw new ArgumentException(ex.Message);
                 }
                 catch (Exception ex)
                 {
