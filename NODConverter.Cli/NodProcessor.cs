@@ -13,7 +13,7 @@ namespace NODConverter.Cli
         private const int ExitCodeConnectionFailed = 1;
         private const int ExitCodeTooFewArgs = 255;
 
-        public void ProcessDocument(int port, string outputFormat, bool verbose, IDocumentFormatRegistry registry, string[] fileNames) {
+        public void ProcessDocument(int port, string outputFormat, IDocumentFormatRegistry registry, string[] fileNames) {
 
             IOpenOfficeConnection connection = new SocketOpenOfficeConnection(port);
             OfficeInfo oo = EnvUtils.Get();
@@ -24,17 +24,14 @@ namespace NODConverter.Cli
             }
             try
             {
-                if (verbose)
-                {
-                    Console.Out.WriteLine("-- connecting to OpenOffice.org on port " + port);
-                }
+                Console.Out.WriteLine("connecting to OpenOffice.org on port " + port);
 
                 // Connect to existing instance
 
                 connection.Connect();
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 // Cannot connect to existing instance - start a new one
@@ -55,7 +52,7 @@ namespace NODConverter.Cli
                 {
                     FileInfo inputFile = new FileInfo(fileNames[0]);
                     FileInfo outputFile = new FileInfo(fileNames[1]);
-                    ConvertOne(converter, inputFile, outputFile, verbose);
+                    ConvertOne(converter, inputFile, outputFile);
                 }
                 else
                 {
@@ -63,26 +60,20 @@ namespace NODConverter.Cli
                     {
                         var inputFile = new FileInfo(t);
                         var outputFile = new FileInfo(inputFile.FullName.Remove(inputFile.FullName.LastIndexOf(".", StringComparison.Ordinal)) + "." + outputFormat);
-                        ConvertOne(converter, inputFile, outputFile, verbose);
+                        ConvertOne(converter, inputFile, outputFile);
                     }
                 }
             }
             finally
             {
-                if (verbose)
-                {
-                    Console.Out.WriteLine("-- disconnecting");
-                }
+                Console.Out.WriteLine("disconnecting from OpenOffice.org on port " + port);
                 connection.Disconnect();
             }
         }
 
-        private static void ConvertOne(IDocumentConverter converter, FileInfo inputFile, FileInfo outputFile, bool verbose)
+        private static void ConvertOne(IDocumentConverter converter, FileInfo inputFile, FileInfo outputFile)
         {
-            if (verbose)
-            {
-                Console.Out.WriteLine("-- converting " + inputFile + " to " + outputFile);
-            }
+            Console.Out.WriteLine("converting " + inputFile + " to " + outputFile);
             converter.Convert(inputFile, outputFile);
         }
     }

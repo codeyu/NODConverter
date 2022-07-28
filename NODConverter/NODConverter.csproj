@@ -70,7 +70,6 @@
     <Compile Include="EnvUtils.cs" />
     <Compile Include="IDocumentConverter.cs" />
     <Compile Include="IDocumentFormatRegistry.cs" />
-    <Compile Include="LoggerFactory.cs" />
     <Compile Include="OpenOffice\Connection\AbstractOpenOfficeConnection.cs" />
     <Compile Include="OpenOffice\Connection\IOpenOfficeConnection.cs" />
     <Compile Include="OpenOffice\Connection\OpenOfficeConfiguration.cs" />

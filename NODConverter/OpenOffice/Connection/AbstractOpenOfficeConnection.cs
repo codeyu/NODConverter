@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-using Slf;
 using uno.util;
 using unoidl.com.sun.star.beans;
 using unoidl.com.sun.star.bridge;
@@ -13,13 +12,8 @@ using unoidl.com.sun.star.uno;
 using Exception = System.Exception;
 namespace NODConverter.OpenOffice.Connection
 {
-    using Logger = ILogger;
-
     public abstract class AbstractOpenOfficeConnection : IOpenOfficeConnection, XEventListener
     {
-
-        protected internal readonly Logger Logger = LoggerFactory.GetLogger();
-
         private readonly string _connectionString;
         private XComponent _bridgeComponent;
         private XMultiComponentFactory _serviceManager;
@@ -34,7 +28,7 @@ namespace NODConverter.OpenOffice.Connection
         [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual void Connect()
         {
-            Logger.Debug("connecting");
+            Console.WriteLine("connecting");
             try
             {
                 EnvUtils.InitUno();
@@ -56,7 +50,7 @@ namespace NODConverter.OpenOffice.Connection
 
                 _componentContext = (XComponentContext)oDefaultContext.Value;
                 _connected = true;
-                Logger.Info("connected");
+                Console.WriteLine("connected");
             }
             catch (NoConnectException connectException)
             {
@@ -72,7 +66,7 @@ namespace NODConverter.OpenOffice.Connection
         public virtual void Disconnect()
         {
             SocketUtils.Disconnect();
-            Logger.Debug("disconnecting");
+            Console.WriteLine("disconnecting");
             _expectingDisconnection = true;
             _bridgeComponent.dispose();
         }
@@ -90,11 +84,11 @@ namespace NODConverter.OpenOffice.Connection
             _connected = false;
             if (_expectingDisconnection)
             {
-                Logger.Info("disconnected");
+                Console.WriteLine("disconnected");
             }
             else
             {
-                Logger.Error("disconnected unexpectedly");
+                Console.WriteLine("disconnected unexpectedly");
             }
             _expectingDisconnection = false;
         }
@@ -112,7 +106,7 @@ namespace NODConverter.OpenOffice.Connection
             {
                 if (!_connected)
                 {
-                    Logger.Info("trying to (re)connect");
+                    Console.WriteLine("trying to (re)connect");
                     Connect();
                 }
                 return _serviceManager.createInstanceWithContext(className, _componentContext);

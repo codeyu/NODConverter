@@ -3,7 +3,6 @@ using System.Collections;
 using System.IO;
 using Dotnet.Commons.IO;
 using NODConverter.OpenOffice.Connection;
-using Slf;
 using unoidl.com.sun.star.frame;
 using unoidl.com.sun.star.lang;
 using unoidl.com.sun.star.task;
@@ -13,7 +12,6 @@ using unoidl.com.sun.star.util;
 namespace NODConverter.OpenOffice.Converter
 {
     using IOUtils = StreamUtils;
-    using Logger = ILogger;
 
     /// <summary>
     /// Default file-based <seealso cref="AbstractOpenOfficeDocumentConverter"/> implementation.
@@ -29,10 +27,6 @@ namespace NODConverter.OpenOffice.Converter
     /// <seealso cref= "StreamOpenOfficeDocumentConverter"> </seealso>
     public class OpenOfficeDocumentConverter : AbstractOpenOfficeDocumentConverter
     {
-
-        
-        private static readonly Logger Logger;
-
         public OpenOfficeDocumentConverter(IOpenOfficeConnection connection)
             : base(connection)
         {
@@ -201,7 +195,7 @@ namespace NODConverter.OpenOffice.Converter
                     }
                     catch (CloseVetoException closeVetoException)
                     {
-                        Logger.Warn("document.close() vetoed:"+closeVetoException.Message);
+                        Console.WriteLine("document.close() vetoed: " + closeVetoException.Message);
                     }
                 }
                 else
@@ -209,10 +203,6 @@ namespace NODConverter.OpenOffice.Converter
                     document.dispose();
                 }
             }
-        }
-        static OpenOfficeDocumentConverter()
-        {
-            Logger = LoggerFactory.GetLogger();
         }
     }
 }

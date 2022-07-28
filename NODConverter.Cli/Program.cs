@@ -73,7 +73,7 @@ namespace NODConverter.Cli
 
                 try
                 {
-                    nodProcessor.ProcessDocument(port, outputFormat, true, registry, fileNames);
+                    nodProcessor.ProcessDocument(port, outputFormat, registry, fileNames);
                     nodProcessed = true;
                     break;
                 }
